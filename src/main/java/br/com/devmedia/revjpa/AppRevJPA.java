@@ -1,5 +1,6 @@
 package br.com.devmedia.revjpa;
 
+import java.util.Arrays;
 import java.util.List;
 
 import br.com.devmedia.revjpa.dao.DocumentDAO;
@@ -33,9 +34,65 @@ public class AppRevJPA
         //updateDocument();
         //findPersonByCpf();
         
-        insertPhone();
+        //insertPhone();
+        //insertPhoneByPerson();
+        //updatePhone();
+        //updatePhoneByPerson();
+        deleteOnCascade();
         
     }
+
+	private static void deleteOnCascade() {
+		new PersonDAO().delete(9L);
+	}
+
+	private static void updatePhoneByPerson() {
+		Person person = new PersonDAO().findById(9L);
+		for (Phone phone: person.getPhones()){
+			System.out.println("| - "+phone.toString());
+			if(TypePhone.COMERCIAL == phone.getType()){
+				phone.setType(TypePhone.RESIDENCIAL);
+			}
+		}
+		new PersonDAO().update(person);
+		
+		for (Phone phone: person.getPhones()){
+			System.out.println("2 - "+phone.toString());			
+		}
+	}
+
+	private static void updatePhone() {
+		Person person = new PersonDAO().findById(9L);
+		
+		PhoneDAO dao = new PhoneDAO();
+		
+		Phone phone = new PhoneDAO().findById(3L);
+		phone.setPerson(person);
+		dao.update(phone);
+		
+		phone = dao.findById(phone.getId());
+		System.out.println(phone.toString());
+	}
+
+	private static void insertPhoneByPerson() {
+		Phone ph1 = new Phone(TypePhone.CELULAR, "87235955");
+		Phone ph2 = new Phone(TypePhone.COMERCIAL, "32968388");
+		
+		Person person = new Person();
+		person.setFistName("Gabriel");
+		person.setLastName("Lima");
+		person.setAge(6);
+		person.setDocument(new Document("445.256.365-14", 400222359));
+		
+		//ph1.setPerson(person);
+		//ph2.setPerson(person);
+		//person.setPhones(Arrays.asList(ph1,ph2));
+		
+		person.addPhone(ph1);
+		person.addPhone(ph2);
+		new PersonDAO().save(person);
+		
+	}
 
 	private static void insertPhone() {
 		Person person = new Person();
